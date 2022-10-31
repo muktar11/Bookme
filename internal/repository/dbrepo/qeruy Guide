@@ -1,0 +1,95 @@
+//system Guide
+/*
+1.crate  a database repo which will be in this case postgresDBRepo
+
+2.import app confign and db.conn ecoonection to postgres repo
+type postgresDBRepo struct{
+	APP *config.AppCOnfig
+	DB *sql.DB //datbase connection configuration function
+}
+
+2.create postgres.go file and create all database query function
+
+3.create an interface in resositroy.go in this called DatabseRepo intefaceby import 
+all function fro postgres.go and make it accesaable 
+
+4.create a new repo which in this cane NewPostgresRepo A repository take conn configrations
+ app config and repository DatabaseRepo interface and will return a new pointer to postgreDBRepo
+ we still use postgresDBrepo in qeury thou
+
+ 5. create  a Repo struct in handlers called Repositroy contain AppConfig DB Repo interface 
+
+ 5.create a new repo which called NewRepo takes config dataconnection and return a pointer toRepositroy struct 
+ and return refernce to Repository with app config and NewPostgresRepo Declared in POstgresRepo 
+
+ 6 Now Repo consist NewPostGresRepo Which CONSIST DatabaseRepo which consist postgres query functions 
+
+ 6.. the functions become accessablt to handlers
+
+
+3.create new impartion repo called NewRepo which will import conn and Config '
+which return repo.DatabaseRepo and also return reference of
+*/ 
+
+//get all rows 
+func getAllRows(conn *sql.DB) error{
+	rows, err := conn.Query("select id, first_name, last_name, from users")
+	if err != nil{
+		log.Println(err)
+		return err 
+	}
+	//when the respone more than one row close the row 
+	defer rows.Close()
+	//assing the query to its data type  
+	var firstName, lastName stirng 
+	var id int
+	//iterare over all queries one at a time
+	for rows.Next(){
+		err := rows.Scan(&id, &firstName, &lastName)
+		if err != nil{
+			log.Println(err)
+			return err 
+		}
+		fmt.Println("Record is", id, &firstName, &lastName)
+	}
+	return nil 
+}
+
+//insert a row 
+query := `insert into users (first_name, last_name) values($1, $2)`
+_, err = coon.Exec(query, "JACK", "wHITE")
+if err != nil{
+	return nil
+} 
+
+//get all rows
+err = getAllRows(conn)
+if err != nil{
+	log.Fatal(err)
+}
+//update a row 
+stmt := `update users set first_name = $1 where first_name = $2`
+if err != nil{
+	log.Fatal(err)
+}
+log.Println("Update one or more rows") 
+
+//get ont row by id 
+query = `select id, first_name, last_name from users where id = $1`
+
+var firstName, LastName string 
+var id int 
+
+row := conn.QueryRow(query, 1)
+err = row.Scan(&id, &firstName, &lastName)
+if err != nil{
+	log.Fatal(err)
+}
+log.Println("QueryRow returns" , id, firstName, lastName) 
+
+//delete a row 
+query = `delete from users where id =$1`
+_, err = conn.Exec(query, 6)
+if err != nil{
+	log.Fatal(error)
+}

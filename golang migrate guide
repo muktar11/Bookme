@@ -1,0 +1,8 @@
+
+
+
+
+export DB_URL='postgres://postgres:postgres@localhost:5454/postgres?sslmode=disable'
+
+# Run migrations
+migrate -database ${DB_URL} -path db/migrations up
